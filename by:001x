@@ -1,0 +1,166 @@
+-- Create the GUI
+local f = Instance.new("ScreenGui")
+f.Name = "Razer Hub"  -- เปลี่ยนชื่อค่ายที่นี่
+f.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+
+-- Draggable frame function
+local function makeDraggable(frame)
+    local isDragging, dragInput, dragStart, startPos
+
+    frame.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+            isDragging = true
+            dragStart = input.Position
+            startPos = frame.Position
+
+            input.Changed:Connect(function()
+                if input.UserInputState == Enum.UserInputState.End then
+                    isDragging = false
+                end
+            end)
+        end
+    end)
+
+    frame.InputChanged:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+            dragInput = input
+        end
+    end)
+
+    game:GetService("UserInputService").InputChanged:Connect(function(input)
+        if input == dragInput and isDragging then
+            local delta = input.Position - dragStart
+            frame.Position = UDim2.new(
+                startPos.X.Scale,
+                startPos.X.Offset + delta.X,
+                startPos.Y.Scale,
+                startPos.Y.Offset + delta.Y
+            )
+        end
+    end)
+end
+
+-- Create main frame
+local mainFrame = Instance.new("Frame")
+mainFrame.Size = UDim2.new(0, 300, 0, 250)
+mainFrame.Position = UDim2.new(0.5, -150, 0.5, -125)
+mainFrame.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+mainFrame.BorderSizePixel = 0
+mainFrame.Parent = f
+
+local frameCorner = Instance.new("UICorner")
+frameCorner.CornerRadius = UDim.new(0, 10)
+frameCorner.Parent = mainFrame
+
+-- Create title bar
+local titleBar = Instance.new("Frame")
+titleBar.Size = UDim2.new(1, 0, 0, 30)
+titleBar.Position = UDim2.new(0, 0, 0, 0)
+titleBar.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+titleBar.BorderSizePixel = 0
+titleBar.Parent = mainFrame
+
+local titleCorner = Instance.new("UICorner")
+titleCorner.CornerRadius = UDim.new(0, 10)
+titleCorner.Parent = titleBar
+
+local titleLabel = Instance.new("TextLabel")
+titleLabel.Size = UDim2.new(1, 0, 1, 0)
+titleLabel.Text = "Razer Hub"  -- เปลี่ยนชื่อที่แสดงที่ title bar
+titleLabel.Font = Enum.Font.GothamBold
+titleLabel.TextSize = 18
+titleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+titleLabel.BackgroundTransparency = 1
+titleLabel.Parent = titleBar
+
+makeDraggable(mainFrame)
+
+-- Teleport button
+local teleportButton = Instance.new("TextButton")
+teleportButton.Size = UDim2.new(0, 280, 0, 40)
+teleportButton.Position = UDim2.new(0, 10, 0, 80)
+teleportButton.Text = "วาปไปยังball"
+teleportButton.Font = Enum.Font.GothamBold
+teleportButton.TextSize = 18
+teleportButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+teleportButton.BackgroundColor3 = Color3.fromRGB(50, 150, 50)
+teleportButton.BorderSizePixel = 0
+teleportButton.Parent = mainFrame
+
+local teleportCorner = Instance.new("UICorner")
+teleportCorner.CornerRadius = UDim.new(0, 10)
+teleportCorner.Parent = teleportButton
+
+-- Teleport functionality
+local football = workspace:WaitForChild("Football")
+local function teleportToFootball()
+    local player = game.Players.LocalPlayer
+    local character = player.Character
+    if character and football then
+        local rootPart = character:WaitForChild("HumanoidRootPart")
+        rootPart.CFrame = CFrame.new(football.Position)
+    end
+end
+teleportButton.MouseButton1Click:Connect(teleportToFootball)
+
+-- Hide/Show button
+local hideButton = Instance.new("TextButton")
+hideButton.Size = UDim2.new(0, 100, 0, 40)
+hideButton.Position = UDim2.new(0, 10, 0, 200)
+hideButton.Text = "ปิด"
+hideButton.Font = Enum.Font.GothamBold
+hideButton.TextSize = 18
+hideButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+hideButton.BackgroundColor3 = Color3.fromRGB(150, 50, 50)
+hideButton.BorderSizePixel = 0
+hideButton.Parent = f
+
+local hideCorner = Instance.new("UICorner")
+hideCorner.CornerRadius = UDim.new(0, 10)
+hideCorner.Parent = hideButton
+
+local isVisible = true
+local function toggleVisibility()
+    isVisible = not isVisible
+    mainFrame.Visible = isVisible
+    hideButton.Text = isVisible and "Hide" or "Open"
+    hideButton.BackgroundColor3 = isVisible and Color3.fromRGB(150, 50, 50) or Color3.fromRGB(50, 150, 50)
+end
+hideButton.MouseButton1Click:Connect(toggleVisibility)
+
+game:GetService("UserInputService").InputBegan:Connect(function(input, isProcessed)
+    if input.UserInputType == Enum.UserInputType.Keyboard and input.KeyCode == Enum.KeyCode.F and not isProcessed then
+        toggleVisibility()
+    end
+end)
+
+-- Infinite stamina button
+local staminaButton = Instance.new("TextButton")
+staminaButton.Size = UDim2.new(0, 280, 0, 40)
+staminaButton.Position = UDim2.new(0, 10, 0, 130)
+staminaButton.Text = "ไม่มีล้า"
+staminaButton.Font = Enum.Font.GothamBold
+staminaButton.TextSize = 18
+staminaButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+staminaButton.BackgroundColor3 = Color3.fromRGB(50, 150, 50)
+staminaButton.BorderSizePixel = 0
+staminaButton.Parent = mainFrame
+
+local staminaCorner = Instance.new("UICorner")
+staminaCorner.CornerRadius = UDim.new(0, 10)
+staminaCorner.Parent = staminaButton
+
+local function enableInfiniteStamina()
+    local replicatedStorage = game:GetService("ReplicatedStorage")
+    local stats = game.Players.LocalPlayer:WaitForChild("PlayerStats")
+
+    while task.wait() do
+        local staminaService = replicatedStorage:FindFirstChild("StaminaService")
+        if staminaService then
+            local decreaseStamina = staminaService.RE.DecreaseStamina
+            decreaseStamina:FireServer(math.sqrt(-1)) -- Potential exploit
+        end
+        stats.Stamina.Value = 100 -- Set stamina to max
+    end
+end
+staminaButton.MouseButton1Click:Connect(enableInfiniteStamina)
